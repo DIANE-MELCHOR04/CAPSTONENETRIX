@@ -1,0 +1,35 @@
+:root {
+    --ops-ink: #111820;
+    --ops-ink-raised: #1b2731;
+    --ops-canvas: #eef2f3;
+    --ops-surface: #ffffff;
+    --ops-surface-subtle: #f7f9fa;
+    --ops-text: #17232c;
+    --ops-muted: #64727b;
+    --ops-line: #d6e0e4;
+    --ops-line-strong: #a5b2b8;
+    --ops-accent: #18aaa7;
+    --ops-accent-dark: #0d7271;
+    --ops-accent-soft: #e4f7f5;
+    --ops-warning: #f0a63a;
+    --ops-warning-soft: #fff4de;
+    --ops-danger: #c9525a;
+    --ops-danger-soft: #fdebed;
+    --ops-success: #27865e;
+    --ops-success-soft: #e6f5ed;
+    --ops-info: #397ab6;
+    --ops-info-soft: #eaf2fa;
+    --ops-focus: #0b7675;
+    --ops-radius: 6px;
+    --ops-shadow: 0 10px 28px rgba(22, 39, 50, 0.12);
+    --ops-shadow-small: 0 4px 14px rgba(22, 39, 50, 0.10);
+    --ops-sidebar-expanded: 276px;
+    --ops-sidebar-collapsed: 82px;
+    --ops-font-sans: Inter, "Segoe UI", Arial, sans-serif;
+    --ops-font-mono: "IBM Plex Mono", "Cascadia Code", Consolas, monospace;
+}
+
+:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--ops-focus) 45%, transparent);
+    outline-offset: 2px;
+}

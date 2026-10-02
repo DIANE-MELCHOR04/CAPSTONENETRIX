@@ -1,0 +1,18 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+    RewriteRule ^(?:config|docs|lib|scripts|storage|tests|tmp)(?:/|$) - [F,L,NC]
+</IfModule>
+
+<FilesMatch "\.(?:sql|md|ps1|py|ini|log|dist)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>

@@ -1,0 +1,17 @@
+<?php
+require_once __DIR__ . '/lib/requests.php';
+require_login();
+require_once __DIR__ . '/config/db.php';
+$id = (int) ($_GET['id'] ?? 0);
+$stmt = $pdo->prepare('SELECT rel.*, r.request_no, r.site_id, r.requested_by, s.name AS site_name, u.full_name AS released_by_name FROM material_releases rel JOIN material_requests r ON r.id = rel.request_id JOIN sites s ON s.id = r.site_id JOIN users u ON u.id = rel.released_by WHERE rel.id = ?');
+$stmt->execute([$id]);
+$release = $stmt->fetch();
+if (!$release) die('Release not found.');
+require_site_engineer_record_access((int) $release['site_id'], (int) $release['requested_by']);
+$itemsStmt = $pdo->prepare('SELECT ri.*, m.material_code, m.material_name, un.name AS unit_name FROM material_release_items ri JOIN materials m ON m.id = ri.material_id JOIN units un ON un.id = m.unit_id WHERE ri.release_id = ?');
+$itemsStmt->execute([$id]);
+$items = $itemsStmt->fetchAll();
+?>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title><?= e($release['release_no'] ?? 'Release') ?></title><?php require __DIR__ . '/partials/assets.php'; ?><style>
+body{background:#eef2f3}.print-doc{max-width:900px;margin:28px auto;padding:38px;color:#17232c;background:#fff;border:1px solid #d6e0e4}.print-brand{display:flex;align-items:center;justify-content:space-between;padding-bottom:18px;border-bottom:3px solid #111820}.print-brand strong{display:block;font-size:18px}.print-brand span{color:#64727b;font-size:11px}.print-title{display:flex;align-items:end;justify-content:space-between;margin:24px 0}.print-title h1{margin:0;font-size:25px}.print-title b{font-family:monospace}.print-meta{display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:20px;border:1px solid #d6e0e4}.print-meta div{padding:10px;border-right:1px solid #d6e0e4}.print-meta div:last-child{border-right:0}.print-meta small,.print-meta strong{display:block}.print-meta small{color:#64727b;font-size:9px;text-transform:uppercase}.print-meta strong{margin-top:3px;font-size:11px}.no-print{margin-bottom:16px}@media print{body{background:#fff}.no-print{display:none}.print-doc{margin:0;padding:0;border:0}.print-meta{break-inside:avoid}thead{display:table-header-group}}
+</style></head><body><main class="print-doc"><button class="btn secondary no-print" onclick="window.print()">Print</button><header class="print-brand"><div><strong>Metriccon Co., Inc.</strong><span>Centralized Inventory Forecasting System</span></div><span>Warehouse Control Document</span></header><div class="print-title"><h1>Material Release Slip</h1><b><?= e($release['release_no']) ?></b></div><section class="print-meta"><div><small>Request</small><strong><?= e($release['request_no']) ?></strong></div><div><small>Site</small><strong><?= e($release['site_name']) ?></strong></div><div><small>Released by</small><strong><?= e($release['released_by_name']) ?></strong></div><div><small>Status</small><strong><?= e(str_replace('_', ' ', $release['status'])) ?></strong></div></section><table class="data modern-table"><thead><tr><th>Material</th><th>Released</th><th>Received</th></tr></thead><tbody><?php foreach ($items as $item): ?><tr><td><?= e($item['material_code']) ?> - <?= e($item['material_name']) ?></td><td><?= money_or_qty($item['released_qty']) ?> <?= e($item['unit_name']) ?></td><td><?= money_or_qty($item['received_qty']) ?></td></tr><?php endforeach; ?></tbody></table></main></body></html>
